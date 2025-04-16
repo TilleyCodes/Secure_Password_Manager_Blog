@@ -1,10 +1,8 @@
 ---
 layout: page
-title: About
+title: About the Author
 permalink: /about/
 ---
-
-# About the Author
 
 Hi there! I'm Tilley, a finance professional with a background in ETFs who's passionate about coding and building useful technology. I created this secure password manager as part of my journey into software engineering, combining my interest in cybersecurity with practical problem solving. This project showcases my growing technical skills while addressing a critical digital security challenge that affects millions of users worldwide.
 

@@ -3,6 +3,8 @@ layout: post
 title: Building a Secure Password Manager: Balancing User Convenience and Data Protection
 ---
 
+# **Balancing User Convenience and Data Protection**
+
 ## **Introduction**
 
 In today's digital landscape, the average person manages dozens of online accounts, each requiring unique login credentials. Despite the growing threats of data breaches and credential stuffing attacks, many users continue to use weak, reused passwords across multiple platforms. According to a recent report from Corbado (2024), Australia alone experienced 418 data breaches in 2023 that affected over 60 million users, with weak or compromised passwords being a significant factor in these security incidents.

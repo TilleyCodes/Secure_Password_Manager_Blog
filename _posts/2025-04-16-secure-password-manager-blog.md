@@ -1,8 +1,7 @@
 ---
 layout: post
+title: Building a Secure Password Manager: Balancing User Convenience and Data Protection
 ---
-
-# **Building a Secure Password Manager: Balancing User Convenience and Data Protection**
 
 ## **Introduction**
 

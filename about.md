@@ -38,7 +38,7 @@ project_url = my_journey.build_project("Secure-Password-Manager-App")
 
 I'm naturally curious and thrive on continuous learning. Each new technology I explore opens up possibilities for creating more sophisticated, user friendly solutions. This password manager project represents my commitment to building technology that's not just technically sound but genuinely helpful to users.
 
-![Skills Graph](https://github.com/TilleyCodes/Secure_Password_Manager_Blog/blob/master/images/skills-graph.png)
+![Skills Graph]({{ site.baseurl }}/images/skills-graph.png)
 
 The increasing frequency of data breaches and credential based attacks highlighted in recent cybersecurity reports inspired me to create a tool that addresses these challenges while demonstrating my programming skills. Through this project, I've applied principles of secure application development, implemented encryption protocols, and designed an intuitive interface that makes good security practices accessible.
 

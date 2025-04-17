@@ -1,11 +1,11 @@
 ---
 layout: post
-title: Blog 17 April 2025
+title: Building a Secure Password Manager
 ---
 
-# **Building a Secure Password Manager: Balancing User Convenience and Data Protection**
+# **Balancing User Convenience and Data Protection**
 
-![Password Security](https://github.com/TilleyCodes/Secure_Password_Manager_Blog/blob/master/images/password-security.png)
+![Password Security](https://raw.github.com/TilleyCodes/Secure_Password_Manager_Blog/blob/master/images/password-security.png)
 
 ## **Introduction**
 
@@ -27,7 +27,7 @@ Password management remains one of the most fundamental yet challenging aspects 
 
 3. **Growing Impact on Australian Businesses**: As reported by Corbado (2024), Australia ranks among the top 5 countries most affected by data breaches, with an average cost per breach reaching $3.35 million in 2023\. These breaches frequently involve compromised password credentials, with 53% of users admitting to reusing passwords across multiple accounts.
 
-![Data Breach Statistics](https://github.com/TilleyCodes/Secure_Password_Manager_Blog/blob/master/images/breach-statistics.png)
+![Data Breach Statistics](https://raw.github.com/TilleyCodes/Secure_Password_Manager_Blog/blob/master/images/breach-statistics.png)
 
 ### **Ethical Considerations in Password Management**
 
@@ -51,7 +51,7 @@ My solution is a Python based command line password manager that provides:
 4. Breach checking against known compromised passwords  
 5. Simple, intuitive interface for all user levels
 
-![Application Interface](https://github.com/TilleyCodes/Secure_Password_Manager_Blog/blob/master/images/app-interface.png)
+![Application Interface](https://raw.github.com/TilleyCodes/Secure_Password_Manager_Blog/blob/master/images/app-interface.png)
 
 The design of this solution directly addresses critical vulnerabilities identified in recent cyber incidents. For instance, the Australian Financial Review (2025) report on superannuation fund attacks revealed that attackers specifically targeted authentication mechanisms with weak encryption implementations. My implementation counters this by using Fernet symmetric encryption, which provides authenticated encryption to prevent tampering, a key vulnerability in those breaches.
 
@@ -239,7 +239,7 @@ My planning process followed these steps:
    - Determined file structure and data flow for the application
    - Planned how to implement the master password mechanism
 
-![Project Architecture](https://github.com/TilleyCodes/Secure_Password_Manager_Blog/blob/master/images/architecture.png)
+![Project Architecture](https://raw.github.com/TilleyCodes/Secure_Password_Manager_Blog/blob/master/images/architecture.png)
 
 3. **Core Implementation: Encryption and Storage** (Days 5-6)
 

@@ -1,15 +1,19 @@
 ---
 layout: post
-title: Building a Secure Password Manager
+title: Blog 17 April 2025
 ---
 
-# **Balancing User Convenience and Data Protection**
+# **Building a Secure Password Manager: Balancing User Convenience and Data Protection**
+
+![Password Security](https://github.com/TilleyCodes/Secure_Password_Manager_Blog/blob/master/images/password-security.png)
 
 ## **Introduction**
 
 In today's digital landscape, the average person manages dozens of online accounts, each requiring unique login credentials. Despite the growing threats of data breaches and credential stuffing attacks, many users continue to use weak, reused passwords across multiple platforms. According to a recent report from Corbado (2024), Australia alone experienced 418 data breaches in 2023 that affected over 60 million users, with weak or compromised passwords being a significant factor in these security incidents.
 
 This project addresses this critical cybersecurity challenge by developing a secure command line password manager that not only stores passwords safely but also helps users create stronger credentials and identifies potential security risks.
+
+> 💡 **Want to try it yourself?** Check out the [GitHub repository](https://github.com/TilleyCodes/Secure-Password-Manager-App) for installation instructions and source code.
 
 ## **The Problem: Password Security in the Digital Age**
 
@@ -22,6 +26,8 @@ Password management remains one of the most fundamental yet challenging aspects 
 2. **Escalating Data Breach Frequency**: Cybersecurity Ventures (2025) reports that cybercriminals are now launching an average of 10-15 daily targeted attacks against medium and large organisations worldwide. These intrusions frequently begin with credential based attacks, with compromised passwords being the initial entry point in over 60% of breaches.
 
 3. **Growing Impact on Australian Businesses**: As reported by Corbado (2024), Australia ranks among the top 5 countries most affected by data breaches, with an average cost per breach reaching $3.35 million in 2023\. These breaches frequently involve compromised password credentials, with 53% of users admitting to reusing passwords across multiple accounts.
+
+![Data Breach Statistics](https://github.com/TilleyCodes/Secure_Password_Manager_Blog/blob/master/images/breach-statistics.png)
 
 ### **Ethical Considerations in Password Management**
 
@@ -44,6 +50,8 @@ My solution is a Python based command line password manager that provides:
 3. Password strength analysis with actionable feedback  
 4. Breach checking against known compromised passwords  
 5. Simple, intuitive interface for all user levels
+
+![Application Interface](https://github.com/TilleyCodes/Secure_Password_Manager_Blog/blob/master/images/app-interface.png)
 
 The design of this solution directly addresses critical vulnerabilities identified in recent cyber incidents. For instance, the Australian Financial Review (2025) report on superannuation fund attacks revealed that attackers specifically targeted authentication mechanisms with weak encryption implementations. My implementation counters this by using Fernet symmetric encryption, which provides authenticated encryption to prevent tampering, a key vulnerability in those breaches.
 
@@ -76,27 +84,139 @@ The AFR article (2025) describes how the attackers targeting Australian superann
 
 1. **Password Encryption System**:
 
-   * Uses a key derived from the master password with PBKDF2  
-   * Implements Fernet symmetric encryption for all stored data  
-   * Never stores the master password itself  
+   Here's how I implemented the key derivation and encryption system:
+
+   ```python
+   def _generate_key(self, password: str) -> bytes:
+       """
+       Generate an encryption key from the master password.
+       
+       Uses PBKDF2HMAC to derive a secure key from the password.
+       
+       Args:
+           password: The master password
+           
+       Returns:
+           A bytes object containing the encryption key
+       """
+       password_bytes = password.encode()
+       # Use a static salt for demo (in production, to use a secure random salt)
+       salt = b'staticSalt123456'  # Note: In a real scenario, generate and store a unique salt
+
+       kdf = PBKDF2HMAC(
+           algorithm=hashes.SHA256(),
+           length=32,
+           salt=salt,
+           iterations=100000,
+       )
+
+       key = base64.urlsafe_b64encode(kdf.derive(password_bytes))
+       return key
+   ```
      
 2. **Password Strength Analyser**:
 
-   * Evaluates password length, character variety, and common patterns  
-   * Provides specific feedback for improvement  
-   * Assigns strength ratings (Weak, Medium, Strong)  
+   The strength analysis examines multiple factors to provide useful feedback:
+
+   ```python
+   def analyse_password_strength(password: str) -> Dict[str, Union[int, str, bool, List[str]]]:
+       """
+       Analyse the strength of a password.
+       """
+       # Initialise metrics
+       score = 0
+       feedback = []
+
+       # Check length
+       if len(password) < 8:
+           score -= 2
+           feedback.append("Password is too short (< 8 characters)")
+       elif len(password) >= 12:
+           score += 2
+           feedback.append("Good length")
+       else:
+           score += 1
+
+       # Check character types
+       has_lowercase = bool(re.search(r'[a-z]', password))
+       has_uppercase = bool(re.search(r'[A-Z]', password))
+       has_digit = bool(re.search(r'\d', password))
+       has_special = bool(re.search(r'[^A-Za-z0-9]', password))
+
+       char_types = sum([has_lowercase, has_uppercase, has_digit, has_special])
+
+       if char_types == 4:
+           score += 3
+           feedback.append("Excellent character variety")
+       elif char_types == 3:
+           score += 2
+           feedback.append("Good character variety")
+       # More checks follow...
+   ```
      
 3. **Breach Checker**:
 
-   * Implements k-anonymity pattern to securely check passwords  
-   * Uses the Have I Been Pwned API without transmitting full passwords  
-   * Alerts users if their passwords appear in known data breaches  
+   The breach checking implements the k-anonymity pattern for privacy:
+
+   ```python
+   def check_password_breach(password: str) -> Tuple[bool, Optional[int]]:
+       """
+       Check if a password has been compromised using the HaveIBeenPwned API.
+       
+       Uses the k-anonymity model to securely check if a password has appeared
+       in known data breaches without sending the full password over the network.
+       """
+       # Hash the password with SHA-1
+       sha1_hash = hashlib.sha1(password.encode()).hexdigest().upper()
+       hash_prefix = sha1_hash[:5]
+       hash_suffix = sha1_hash[5:]
+
+       try:
+           # Query the API with the hash prefix
+           response = requests.get(
+               f"https://api.pwnedpasswords.com/range/{hash_prefix}", 
+               timeout=10
+           )
+
+           if response.status_code == 200:
+               # Check if the hash suffix is in the response
+               for line in response.text.splitlines():
+                   if line.split(':')[0] == hash_suffix:
+                       occurrences = int(line.split(':')[1])
+                       return True, occurrences
+
+               # Password not found in breaches
+               return False, None
+           # Error handling continues...
+   ```
      
 4. **Command Line Interface**:
 
-   * Provides clear, menu driven interaction  
-   * Implements secure password entry using getpass  
-   * Offers intuitive navigation between features
+   The main application loop handles user interactions:
+
+   ```python
+   def main() -> None:
+       """
+       Main function to run the password manager application.
+       """
+       print_header()
+       print("Welcome to the Secure Password Manager!")
+       print("\nPlease enter your master password to continue.")
+
+       # Get master password securely (input not visible on screen)
+       master_password = getpass.getpass("Master Password: ")
+
+       # Initialise password manager with the master password
+       pm = PasswordManager(master_password)
+
+       while True:
+           print_header()
+           print_menu()
+
+           user_selection = input("Please enter your selection (1-7): ")
+           
+           # Menu options and their handlers...
+   ```
 
 ### **Implementation Process and Challenges**
 
@@ -118,6 +238,8 @@ My planning process followed these steps:
    - Decided on Fernet symmetric encryption after evaluating security options
    - Determined file structure and data flow for the application
    - Planned how to implement the master password mechanism
+
+![Project Architecture](https://github.com/TilleyCodes/Secure_Password_Manager_Blog/blob/master/images/architecture.png)
 
 3. **Core Implementation: Encryption and Storage** (Days 5-6)
 
@@ -171,6 +293,27 @@ During this project, I encountered several significant technical challenges that
    * **Solution**: I implemented PBKDF2HMAC with a high iteration count (100,000) to derive a key from the master password, adding significant brute force resistance while still maintaining a good user experience
    * **Learning**: I gained deeper understanding of cryptographic key derivation functions and the importance of computational complexity in security
 
+   ```python
+   # Initial approach (insecure)
+   def generate_key_insecure(password: str) -> bytes:
+       # DON'T DO THIS - vulnerable to rainbow table attacks
+       return hashlib.sha256(password.encode()).digest()
+       
+   # Improved approach with PBKDF2
+   def generate_key_secure(password: str) -> bytes:
+       password_bytes = password.encode()
+       salt = b'staticSalt123456'
+       
+       kdf = PBKDF2HMAC(
+           algorithm=hashes.SHA256(),
+           length=32,
+           salt=salt,
+           iterations=100000,
+       )
+       
+       return base64.urlsafe_b64encode(kdf.derive(password_bytes))
+   ```
+
 2. **Secure API Communication for Breach Checking**:
 
    * **Challenge**: Checking passwords against breach databases without exposing them  
@@ -192,7 +335,7 @@ During this project, I encountered several significant technical challenges that
    * **Challenge**: Ensuring the password file couldn't be tampered with or corrupted  
    * **Initial Approach**: Basic file encryption without integrity checking
    * **Problem**: Modified files could potentially crash the application or, worse, be decrypted incorrectly
-   * **Solution**: Used Fernet's built-in authentication feature to verify file integrity before decryption attempts, providing both confidentiality and integrity protection
+   * **Solution**: Used Fernet's built in authentication feature to verify file integrity before decryption attempts, providing both confidentiality and integrity protection
    * **Learning**: I gained practical experience with authenticated encryption and understanding of how it protects against both passive and active attacks
 
 5. **Learning GitHub Pages for Blog Publication**:
@@ -242,12 +385,53 @@ If I were to continue developing this project, I would:
  
 2. **Create a Graphical User Interface**: 
    * Develop a PyQt or Tkinter-based GUI for improved usability
-   * Implement drag-and-drop functionality for password entry
+   * Implement drag and drop functionality for password entry
    * Add visual indicators for password strength and breach status
+
+   ```python
+   # Example of how a GUI implementation might start
+   import tkinter as tk
+   from tkinter import ttk
+   
+   class PasswordManagerGUI:
+       def __init__(self, root):
+           self.root = root
+           self.root.title("Secure Password Manager")
+           self.root.geometry("800x600")
+           
+           # Create the main frame
+           self.main_frame = ttk.Frame(self.root, padding="10")
+           self.main_frame.pack(fill=tk.BOTH, expand=True)
+           
+           # Create the login frame
+           self.login_frame = ttk.LabelFrame(self.main_frame, text="Master Password")
+           self.login_frame.pack(fill=tk.X, pady=10)
+           
+           # Add master password entry
+           self.master_password = tk.StringVar()
+           self.master_password_entry = ttk.Entry(
+               self.login_frame, 
+               textvariable=self.master_password, 
+               show="*"
+           )
+           self.master_password_entry.pack(fill=tk.X, padx=10, pady=10)
+           
+           # Add login button
+           self.login_button = ttk.Button(
+               self.login_frame, 
+               text="Login", 
+               command=self.login
+           )
+           self.login_button.pack(padx=10, pady=10)
+   
+       def login(self):
+           # Authentication logic would go here
+           pass
+   ```
 
 3. **Add Cloud Synchronisation**: 
 
-   * Implement end-to-end encrypted cloud storage using a service like AWS S3
+   * Implement end to end encrypted cloud storage using a service like AWS S3
    * Create a synchronisation protocol that preserves the zero knowledge principle
    * Ensure file consistency across multiple devices with conflict resolution
   
@@ -287,6 +471,8 @@ The development process highlighted the importance of balancing security require
 
 Recent attacks on Australian financial institutions (AFR, 2025) underscore that password security isn't merely theoretical, it directly impacts millions of people's financial wellbeing and personal information. By creating tools that make good security practices accessible, we can help reduce the impact of these increasingly sophisticated attacks.
 
+> 🔒 **Interested in exploring the code?** Check out the complete [GitHub repository](https://github.com/TilleyCodes/Secure-Password-Manager-App) to see how all these components fit together!
+
 ## **References**
 
 Australian Financial Review. (2025, April 4). Cyberattack launched on major Australian superannuation funds. https://www.afr.com/companies/financial-services/cyberattack-launched-on-major-australian-superannuation-funds-20250404-p5lp4l
@@ -295,10 +481,6 @@ Chen, L., & Patel, S. (2024). Balancing Security and Usability in Authentication
 
 Corbado. (2024). Data Breaches in Australia: Statistics and Facts for 2024\. https://www.corbado.com/blog/data-breaches-australia
 
-
 Cybersecurity Ventures. (2025). Intrusion Daily Cyber Threat Alert. https://cybersecurityventures.com/intrusion-daily-cyber-threat-alert/
 
 National Institute of Standards and Technology. (2023). Digital Identity Guidelines.
-
-
-
